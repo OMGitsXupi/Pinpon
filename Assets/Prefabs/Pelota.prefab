@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 8155568744740859854}
   - component: {fileID: 8155568744740859853}
   - component: {fileID: -1511722213552722094}
-  - component: {fileID: -7718649675425312832}
   - component: {fileID: 3869410434577509947}
+  - component: {fileID: -7718649675425312832}
   m_Layer: 0
   m_Name: Pelota
   m_TagString: pelota
@@ -133,22 +133,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &-7718649675425312832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8155568744888943703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c48c8f378cd8a4142a08e69f28ca9b5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  fuerza: 5
-  subida: 3
 --- !u!114 &3869410434577509947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,3 +151,19 @@ MonoBehaviour:
   localPositionSensitivity: 100
   localRotationSensitivity: 0.1
   localScaleSensitivity: 0.1
+--- !u!114 &-7718649675425312832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155568744888943703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c48c8f378cd8a4142a08e69f28ca9b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  fuerza: 5
+  subida: 3

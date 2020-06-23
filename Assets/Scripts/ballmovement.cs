@@ -11,6 +11,9 @@ public class ballmovement : NetworkBehaviour
     private int botes = 0;
     Vector3 posicionInicio;
     moverpala pala_script;
+    NetworkManager manager;
+    bool jugandoIzda = true;
+    int puntuacionIzda = 0, puntuacionDcha = 0;
 
     public override void OnStartServer()
     {
@@ -29,7 +32,7 @@ public class ballmovement : NetworkBehaviour
         if (objeto.gameObject.CompareTag("mesa"))
         {
             botes++;
-            if (botes > 2)
+            if (botes > 1)
             {
                 print("demasiados botes en la mesa");
                 reiniciar();
@@ -39,6 +42,24 @@ public class ballmovement : NetworkBehaviour
     //        GetComponent<Rigidbody>().AddForce(direccion * fuerza);
         }
 
+    }
+
+    [ClientRpc]
+    public void RpcSyncedPos(Vector3 syncedPos, Quaternion syncedRotation)
+    {
+        transform.position = syncedPos;
+        transform.rotation = syncedRotation;
+    }
+
+    [Server]
+    private void UpdateClientsPos()
+    {
+        RpcSyncedPos(transform.position, transform.rotation);
+    }
+
+    void Update()
+    {
+        UpdateClientsPos();
     }
 
     [Server]
@@ -51,6 +72,7 @@ public class ballmovement : NetworkBehaviour
 
         if (objeto.gameObject.CompareTag("pala")) //la pala se mueve en el plano Y,Z
         {
+            rigidbody3d.constraints = RigidbodyConstraints.None;
             botes = 0;
             pala_script = objeto.GetComponent<moverpala>();
             Vector3 direccion = new Vector3(objeto.gameObject.GetComponent<Rigidbody>().rotation.z, 0, 0).normalized;
@@ -58,6 +80,9 @@ public class ballmovement : NetworkBehaviour
             velocidad.Scale(new Vector3(0.5f, 0.8f, 0.5f));
 
             rigidbody3d.velocity = direccion * fuerza + velocidad;
+            if (transform.position.x > 0) //ha golpeado el de la izquierda
+                jugandoIzda = true;
+            else jugandoIzda = false;
         }
     }
 
@@ -67,5 +92,7 @@ public class ballmovement : NetworkBehaviour
         botes = 0;
         rigidbody3d.velocity = Vector3.zero;
         transform.position = posicionInicio;
+        jugandoIzda = true;
+        rigidbody3d.constraints = RigidbodyConstraints.FreezePosition;
     }
 }
