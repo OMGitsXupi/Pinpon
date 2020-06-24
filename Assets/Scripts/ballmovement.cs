@@ -16,6 +16,7 @@ public class ballmovement : NetworkBehaviour
     bool jugandoIzda = true;
     int puntuacionIzda = 0, puntuacionDcha = 0;
     public Text puntuacionIzdaText, puntuacionDchaText;
+    public AudioSource sound;
 
     public override void OnStartServer()
     {
@@ -40,6 +41,36 @@ public class ballmovement : NetworkBehaviour
     }
 
     [ClientRpc]
+    private void RpcReproducirPing()
+    {
+        if (Random.Range(0, 2) == 0)
+        {
+            sound = GetComponents<AudioSource>()[0];
+            sound.Play();
+        }
+        else
+        {
+            sound = GetComponents<AudioSource>()[1];
+            sound.Play();
+        }
+    }
+
+    [ClientRpc]
+    private void RpcReproducirPong()
+    {
+        if (Random.Range(0, 2) == 0)
+        {
+            sound = GetComponents<AudioSource>()[2];
+            sound.Play();
+        }
+        else
+        {
+            sound = GetComponents<AudioSource>()[3];
+            sound.Play();
+        }
+    }
+
+    [ClientRpc]
     private void RpcActualizarMarcador(int a, int b)
     {
         puntuacionIzdaText = GameObject.Find("puntuacionIzda").GetComponent<Text>();
@@ -58,6 +89,7 @@ public class ballmovement : NetworkBehaviour
     {
         if (objeto.gameObject.CompareTag("mesa"))
         {
+            RpcReproducirPong();
             botes++;
             if (transform.position.x < 0 && rigidbody3d.velocity.x > 0) //fallo: toca en tu mismo campo
             { 
@@ -92,6 +124,7 @@ public class ballmovement : NetworkBehaviour
     {
         if (objeto.gameObject.CompareTag("suelo"))
         {
+            RpcReproducirPong();
             if (botes == 1 && rigidbody3d.velocity.x > 0) // punto: 2 toques en la mesa y se gana un punto (no debería pasar, es imposible llegar a eso)
             {
                 puntuacionDcha++;
@@ -116,6 +149,7 @@ public class ballmovement : NetworkBehaviour
 
         if (objeto.gameObject.CompareTag("pala")) //la pala se mueve en el plano Y,Z
         {
+            RpcReproducirPing();
             rigidbody3d.constraints = RigidbodyConstraints.None;
             botes = 0;
             pala_script = objeto.GetComponent<moverpala>();
