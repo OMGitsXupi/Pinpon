@@ -27,6 +27,32 @@ public class ballmovement : NetworkBehaviour
 
     }
 
+    [ClientRpc]
+    public void RpcSyncedPos(Vector3 syncedPos)
+    {
+        transform.position = syncedPos;
+    }
+
+    [Server]
+    private void UpdateClientsPos()
+    {
+        RpcSyncedPos(transform.position);
+    }
+
+    [ClientRpc]
+    private void RpcActualizarMarcador(int a, int b)
+    {
+        puntuacionIzdaText = GameObject.Find("puntuacionIzda").GetComponent<Text>();
+        puntuacionDchaText = GameObject.Find("puntuacionDcha").GetComponent<Text>();
+        puntuacionIzdaText.text = a.ToString();
+        puntuacionDchaText.text = b.ToString();
+    }
+
+    void Update()
+    {
+        UpdateClientsPos(); //mejorar lag
+    }
+
     //[ServerCallback]
     void OnCollisionEnter(Collision objeto)
     {
@@ -59,32 +85,6 @@ public class ballmovement : NetworkBehaviour
     //        GetComponent<Rigidbody>().AddForce(direccion * fuerza);
         }
 
-    }
-
-    [ClientRpc]
-    public void RpcSyncedPos(Vector3 syncedPos)
-    {
-        transform.position = syncedPos;
-    }
-
-    [Server]
-    private void UpdateClientsPos()
-    {
-        RpcSyncedPos(transform.position);
-    }
-
-    [ClientRpc]
-    private void RpcActualizarMarcador(int a, int b)
-    {
-        puntuacionIzdaText = GameObject.Find("puntuacionIzda").GetComponent<Text>();
-        puntuacionDchaText = GameObject.Find("puntuacionDcha").GetComponent<Text>();
-        puntuacionIzdaText.text = a.ToString();
-        puntuacionDchaText.text = b.ToString();
-    }
-
-    void Update()
-    {
-        UpdateClientsPos(); //mejorar lag
     }
 
     [Server]
@@ -121,9 +121,10 @@ public class ballmovement : NetworkBehaviour
             pala_script = objeto.GetComponent<moverpala>();
             Vector3 direccion = new Vector3(objeto.gameObject.GetComponent<Rigidbody>().rotation.z, 0, 0).normalized;
             Vector3 velocidad = pala_script.getVelocidad();
-            velocidad.Scale(new Vector3(0.5f, 0.8f, 0.5f));
+            velocidad.Scale(new Vector3(0f, 0f, 0.5f));
+            Vector3 velocidadSubida = new Vector3(0f, subida, 0f);
 
-            rigidbody3d.velocity = direccion * fuerza + velocidad;
+            rigidbody3d.velocity = direccion * fuerza + velocidad + velocidadSubida;
             jugandoIzda = (transform.position.x > 0); //ha golpeado el de la izquierda o no
         }
     }
