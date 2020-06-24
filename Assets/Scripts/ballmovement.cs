@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 
 public class ballmovement : NetworkBehaviour
@@ -14,6 +15,7 @@ public class ballmovement : NetworkBehaviour
     NetworkManager manager;
     bool jugandoIzda = true;
     int puntuacionIzda = 0, puntuacionDcha = 0;
+    public Text puntuacionIzdaText, puntuacionDchaText;
 
     public override void OnStartServer()
     {
@@ -22,19 +24,34 @@ public class ballmovement : NetworkBehaviour
 
         posicionInicio = transform.position;
 
-        // Lanza la pelota hacia el primer jugador
-        //rigidbody3d.velocity = Vector2.right * fuerza;
+
     }
 
-    [ServerCallback]
+    //[ServerCallback]
     void OnCollisionEnter(Collision objeto)
     {
         if (objeto.gameObject.CompareTag("mesa"))
         {
             botes++;
-            if (botes > 1)
+            if (transform.position.x < 0 && rigidbody3d.velocity.x > 0) //fallo: toca en tu mismo campo
+            { 
+                puntuacionIzda++;
+                reiniciar();
+            }
+            else if (transform.position.x > 0 && rigidbody3d.velocity.x < 0)
+            { 
+                puntuacionDcha++;
+                reiniciar();
+            }
+
+            if (botes > 1 && rigidbody3d.velocity.x > 0) // 2 toques en la mesa y se gana un punto (no debería pasar, es imposible llegar a eso)
             {
-                print("demasiados botes en la mesa");
+                puntuacionDcha++;
+                reiniciar();
+            }
+            else if(botes > 1 && rigidbody3d.velocity.x < 0)
+            {
+                puntuacionIzda++;
                 reiniciar();
             }
 
@@ -45,21 +62,29 @@ public class ballmovement : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcSyncedPos(Vector3 syncedPos, Quaternion syncedRotation)
+    public void RpcSyncedPos(Vector3 syncedPos)
     {
         transform.position = syncedPos;
-        transform.rotation = syncedRotation;
     }
 
     [Server]
     private void UpdateClientsPos()
     {
-        RpcSyncedPos(transform.position, transform.rotation);
+        RpcSyncedPos(transform.position);
+    }
+
+    [ClientRpc]
+    private void RpcActualizarMarcador(int a, int b)
+    {
+        puntuacionIzdaText = GameObject.Find("puntuacionIzda").GetComponent<Text>();
+        puntuacionDchaText = GameObject.Find("puntuacionDcha").GetComponent<Text>();
+        puntuacionIzdaText.text = a.ToString();
+        puntuacionDchaText.text = b.ToString();
     }
 
     void Update()
     {
-        UpdateClientsPos();
+        UpdateClientsPos(); //mejorar lag
     }
 
     [Server]
@@ -67,7 +92,26 @@ public class ballmovement : NetworkBehaviour
     {
         if (objeto.gameObject.CompareTag("suelo"))
         {
-            reiniciar();
+            if (botes == 1 && rigidbody3d.velocity.x > 0) // punto: 2 toques en la mesa y se gana un punto (no debería pasar, es imposible llegar a eso)
+            {
+                puntuacionDcha++;
+                reiniciar();
+            }
+            else if (botes == 1 && rigidbody3d.velocity.x < 0)
+            {
+                puntuacionIzda++;
+                reiniciar();
+            }
+            else if (botes == 0 && rigidbody3d.velocity.x > 0) // fallo: fuera
+            {
+                puntuacionIzda++;
+                reiniciar();
+            }
+            else if (botes == 0 && rigidbody3d.velocity.x < 0)
+            {
+                puntuacionDcha++;
+                reiniciar();
+            }
         }
 
         if (objeto.gameObject.CompareTag("pala")) //la pala se mueve en el plano Y,Z
@@ -80,9 +124,7 @@ public class ballmovement : NetworkBehaviour
             velocidad.Scale(new Vector3(0.5f, 0.8f, 0.5f));
 
             rigidbody3d.velocity = direccion * fuerza + velocidad;
-            if (transform.position.x > 0) //ha golpeado el de la izquierda
-                jugandoIzda = true;
-            else jugandoIzda = false;
+            jugandoIzda = (transform.position.x > 0); //ha golpeado el de la izquierda o no
         }
     }
 
@@ -94,5 +136,7 @@ public class ballmovement : NetworkBehaviour
         transform.position = posicionInicio;
         jugandoIzda = true;
         rigidbody3d.constraints = RigidbodyConstraints.FreezePosition;
+
+        RpcActualizarMarcador(puntuacionIzda, puntuacionDcha);
     }
 }

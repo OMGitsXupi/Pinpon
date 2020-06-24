@@ -102,7 +102,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 4
   m_CollisionDetection: 0
 --- !u!135 &8155568744740859853
 SphereCollider:
@@ -146,9 +146,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0
+  syncInterval: 0.01
   clientAuthority: 0
-  localPositionSensitivity: 100
+  localPositionSensitivity: 0.1
   localRotationSensitivity: 0.1
   localScaleSensitivity: 0.1
 --- !u!114 &-7718649675425312832
