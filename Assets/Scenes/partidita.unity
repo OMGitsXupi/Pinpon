@@ -1359,6 +1359,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pelota test
       objectReference: {fileID: 0}
+    - target: {fileID: 8155568744888943703, guid: 1dfb8ae88f471e9469fc1092d31c80a6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8155568744889178231, guid: 1dfb8ae88f471e9469fc1092d31c80a6,
         type: 3}
       propertyPath: m_LocalPosition.x

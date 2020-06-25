@@ -15,17 +15,18 @@ public class ballmovement : NetworkBehaviour
     NetworkManager manager;
     bool jugandoIzda = true;
     int puntuacionIzda = 0, puntuacionDcha = 0;
-    public Text puntuacionIzdaText, puntuacionDchaText;
-    public AudioSource sound;
+    Text puntuacionIzdaText, puntuacionDchaText;
+    AudioSource sound;
+    Vector3 spawnIzda, spawnDcha;
 
     public override void OnStartServer()
     {
         base.OnStartServer();
         rigidbody3d = base.GetComponent<Rigidbody>();
 
-        posicionInicio = transform.position;
-
-
+        spawnIzda = GameObject.Find("SpawnPalaIzda").transform.position + new Vector3(0f, 1f, 0.7f);
+        spawnDcha = GameObject.Find("SpawnPalaDcha").transform.position + new Vector3(0f, 1f, -0.7f);
+        posicionInicio = spawnIzda;
     }
 
     [ClientRpc]
@@ -168,10 +169,19 @@ public class ballmovement : NetworkBehaviour
     {
         botes = 0;
         rigidbody3d.velocity = Vector3.zero;
+        if ((puntuacionDcha + puntuacionIzda) % 2 == 0)
+            CambiarLado();
         transform.position = posicionInicio;
         jugandoIzda = true;
         rigidbody3d.constraints = RigidbodyConstraints.FreezePosition;
 
         RpcActualizarMarcador(puntuacionIzda, puntuacionDcha);
+    }
+
+    void CambiarLado() 
+    {
+        if (posicionInicio == spawnDcha)
+            posicionInicio = spawnIzda;
+        else posicionInicio = spawnDcha;
     }
 }
