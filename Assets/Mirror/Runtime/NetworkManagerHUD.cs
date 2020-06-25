@@ -2,6 +2,8 @@
 // confusion if someone accidentally presses one.
 using System.ComponentModel;
 using UnityEngine;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Mirror
 {
@@ -43,7 +45,9 @@ namespace Mirror
             if (!showGUI)
                 return;
 
-            GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 215, 9999));
+            GUI.skin.button.fontSize = 24;
+            GUI.skin.textField.fontSize = 24;
+            GUI.skin.label.fontSize = 16;
             if (!NetworkClient.isConnected && !NetworkServer.active)
             {
                 StartButtons();
@@ -68,8 +72,6 @@ namespace Mirror
             }
 
             StopButtons();
-
-            GUILayout.EndArea();
         }
 
         void StartButtons()
@@ -79,7 +81,16 @@ namespace Mirror
                 // Server + Client
                 if (Application.platform != RuntimePlatform.WebGLPlayer)
                 {
-                    if (GUILayout.Button("Host (Server + Client)"))
+                    string miIP = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName()).AddressList[0].ToString();
+                    foreach (System.Net.IPAddress ip in System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName()).AddressList)
+                    {
+                        if (ip.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            miIP = ip.ToString();
+                            break;
+                        }
+                    }
+                    if (GUILayout.Button("Host (local ip: "+ miIP + ")", GUILayout.Height(Screen.height / 10)))
                     {
                         manager.StartHost();
                     }
@@ -87,23 +98,12 @@ namespace Mirror
 
                 // Client + IP
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Client"))
+                if (GUILayout.Button("Client", GUILayout.Height(Screen.height / 10)))
                 {
                     manager.StartClient();
                 }
-                manager.networkAddress = GUILayout.TextField(manager.networkAddress);
+                manager.networkAddress = GUILayout.TextField(manager.networkAddress, GUILayout.Height(Screen.height / 10));
                 GUILayout.EndHorizontal();
-
-                // Server Only
-                if (Application.platform == RuntimePlatform.WebGLPlayer)
-                {
-                    // cant be a server in webgl build
-                    GUILayout.Box("(  WebGL cannot be server  )");
-                }
-                else
-                {
-                    if (GUILayout.Button("Server Only")) manager.StartServer();
-                }
             }
             else
             {
@@ -134,7 +134,7 @@ namespace Mirror
             // stop host if host mode
             if (NetworkServer.active && NetworkClient.isConnected)
             {
-                if (GUILayout.Button("Stop Host"))
+                if (GUILayout.Button("Stop Host", GUILayout.Height(Screen.height / 20)))
                 {
                     manager.StopHost();
                 }
