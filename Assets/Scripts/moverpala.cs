@@ -5,7 +5,7 @@ using Mirror;
 
 public class moverpala : NetworkBehaviour
 {
-    Vector3 posPrevia, velocidad;
+    Vector3 posPrevia, velocidad, posPrePrevia;
     private Vector3 screenPoint;
     private Vector3 offset;
     public float fuerza=5f;
@@ -39,7 +39,8 @@ public class moverpala : NetworkBehaviour
  
     void Update()
     {
-        velocidad = ((transform.position - posPrevia)) / Time.deltaTime;
+        velocidad = ((transform.position - posPrePrevia)) / Time.deltaTime;
+        posPrePrevia = posPrevia;
         posPrevia = transform.position;
 
         print(velocidad);
