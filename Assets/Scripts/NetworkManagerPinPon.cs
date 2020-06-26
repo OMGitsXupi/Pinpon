@@ -30,8 +30,14 @@ namespace Mirror.Examples.Pong
 
         public void SpawnPelota(Transform jugador)
         {
-            Vector3 posJugador = jugador.transform.position;
-            ball = Instantiate(spawnPrefabs.Find(prefab => ball), posJugador + new Vector3(0f, 1f, 0.7f), new Quaternion(1f, 1f, 1f, 1f));
+            ball = Instantiate(spawnPrefabs.Find(prefab => ball), jugador.position + new Vector3(0f, 1f, 0.7f), new Quaternion(1f, 1f, 1f, 1f));
+            NetworkServer.Spawn(ball);
+        }
+
+        public void reiniciar(Transform jugador)
+        {
+            NetworkServer.Destroy(ball);
+            ball = Instantiate(spawnPrefabs.Find(prefab => ball), jugador.position + new Vector3(0f, 1f, 0.7f), new Quaternion(1f, 1f, 1f, 1f));
             NetworkServer.Spawn(ball);
         }
 
