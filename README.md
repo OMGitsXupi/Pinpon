@@ -5,6 +5,6 @@ Videojuego multijugador creado con [Unity](https://unity.com) y [Mirror](https:/
 
 ### :inbox_tray: [Enlace de descarga (Windows)](https://bit.ly/38m4n11)
 ### :inbox_tray: [Enlace de descarga (Android APK)](https://bit.ly/2BwhEs2)
-### :movie_camera: [Tráiler de lanzamiento](https://youtu.be/9FB_gg9lxpk)
+### :movie_camera: [Tráiler de lanzamiento](https://youtu.be/sx6t796h1CU)
 ### :page_with_curl: [Game design document](documentacion/GDD.pdf)
 ### :books: [Manual de usuario](documentacion/Manual.pdf)
